@@ -108,6 +108,8 @@
   border-radius: 0.75rem;
   z-index: 1000;
   min-width: 200px;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .legend-title {

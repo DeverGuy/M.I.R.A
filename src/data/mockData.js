@@ -1,11 +1,51 @@
 // Mock Data for the Dashboard Prototype - Global Scale
 
 export const CROP_TYPES = {
+  // Cereals
   WHEAT: { id: 'wheat', name: 'Wheat', color: '#f59e0b' },
   CORN: { id: 'corn', name: 'Corn', color: '#10b981' },
-  SOYBEAN: { id: 'soybean', name: 'Soybean', color: '#8b5cf6' },
   RICE: { id: 'rice', name: 'Rice', color: '#3b82f6' },
-  COTTON: { id: 'cotton', name: 'Cotton', color: '#f43f5e' }
+  BARLEY: { id: 'barley', name: 'Barley', color: '#d97706' },
+  OATS: { id: 'oats', name: 'Oats', color: '#b45309' },
+  SORGHUM: { id: 'sorghum', name: 'Sorghum', color: '#84cc16' },
+  MILLET: { id: 'millet', name: 'Millet', color: '#a3e635' },
+  RYE: { id: 'rye', name: 'Rye', color: '#78350f' },
+  
+  // Pulses/Legumes
+  SOYBEAN: { id: 'soybean', name: 'Soybean', color: '#8b5cf6' },
+  LENTIL: { id: 'lentil', name: 'Lentil', color: '#d946ef' },
+  CHICKPEA: { id: 'chickpea', name: 'Chickpea', color: '#ec4899' },
+  PEAS: { id: 'peas', name: 'Peas', color: '#4ade80' },
+  BEANS: { id: 'beans', name: 'Beans', color: '#a855f7' },
+  
+  // Oilseeds
+  SUNFLOWER: { id: 'sunflower', name: 'Sunflower', color: '#eab308' },
+  CANOLA: { id: 'canola', name: 'Canola/Rapeseed', color: '#facc15' },
+  PEANUT: { id: 'peanut', name: 'Peanut', color: '#c2410c' },
+  OLIVE: { id: 'olive', name: 'Olive', color: '#65a30d' },
+  
+  // Fibers and Cash Crops
+  COTTON: { id: 'cotton', name: 'Cotton', color: '#f43f5e' },
+  SUGARCANE: { id: 'sugarcane', name: 'Sugarcane', color: '#14b8a6' },
+  SUGARBEET: { id: 'sugarbeet', name: 'Sugar Beet', color: '#0ea5e9' },
+  TOBACCO: { id: 'tobacco', name: 'Tobacco', color: '#b91c1c' },
+  COFFEE: { id: 'coffee', name: 'Coffee', color: '#451a03' },
+  TEA: { id: 'tea', name: 'Tea', color: '#166534' },
+  COCOA: { id: 'cocoa', name: 'Cocoa', color: '#7c2d12' },
+  
+  // Roots/Tubers
+  POTATO: { id: 'potato', name: 'Potato', color: '#9a3412' },
+  CASSAVA: { id: 'cassava', name: 'Cassava', color: '#ca8a04' },
+  SWEET_POTATO: { id: 'sweet_potato', name: 'Sweet Potato', color: '#ea580c' },
+  YAM: { id: 'yam', name: 'Yam', color: '#92400e' },
+  
+  // Fruits/Vegetables (Broad Categories)
+  TOMATO: { id: 'tomato', name: 'Tomato', color: '#ef4444' },
+  ONION: { id: 'onion', name: 'Onion', color: '#fb923c' },
+  APPLE: { id: 'apple', name: 'Apple Orchard', color: '#dc2626' },
+  BANANA: { id: 'banana', name: 'Banana Plantation', color: '#fef08a' },
+  CITRUS: { id: 'citrus', name: 'Citrus Grove', color: '#f97316' },
+  GRAPES: { id: 'grapes', name: 'Vineyard', color: '#5b21b6' },
 };
 
 export const STRESS_LEVELS = {
@@ -142,41 +182,50 @@ export function suggestCropForRegion(lat, lng) {
   // Simple mock logic based on latitude
   const absLat = Math.abs(lat);
   
+  // Select a random crop from a suitable list for variety in suggestions
   if (absLat < 23.5) {
     // Tropical
+    const tropicalCrops = [CROP_TYPES.RICE, CROP_TYPES.COFFEE, CROP_TYPES.SUGARCANE, CROP_TYPES.BANANA, CROP_TYPES.CASSAVA, CROP_TYPES.COCOA, CROP_TYPES.YAM, CROP_TYPES.SORGHUM, CROP_TYPES.MILLET];
+    const recommendedCrop = tropicalCrops[Math.floor(Math.random() * tropicalCrops.length)];
     return {
-      recommendedCrop: CROP_TYPES.RICE,
+      recommendedCrop,
       climate: 'Tropical',
       conditions: 'High humidity, consistent rainfall, warm temperatures year-round.',
-      soil: 'Clay loam with good water retention.',
-      reasoning: 'Rice and cotton thrive in tropical climates with abundant water and heat. Given the selected coordinates, rice is highly recommended.'
+      soil: 'Varies by specific location, often clay loam with good water retention.',
+      reasoning: `${recommendedCrop.name} thrives in tropical climates with abundant water and heat. Given the selected coordinates near the equator, this crop is highly recommended.`
     };
   } else if (absLat >= 23.5 && absLat < 40) {
     // Subtropical / Warm Temperate
+    const subtropicalCrops = [CROP_TYPES.COTTON, CROP_TYPES.SOYBEAN, CROP_TYPES.TEA, CROP_TYPES.CITRUS, CROP_TYPES.PEANUT, CROP_TYPES.SWEET_POTATO, CROP_TYPES.OLIVE, CROP_TYPES.GRAPES, CROP_TYPES.TOBACCO];
+    const recommendedCrop = subtropicalCrops[Math.floor(Math.random() * subtropicalCrops.length)];
     return {
-      recommendedCrop: CROP_TYPES.COTTON,
-      climate: 'Subtropical',
+      recommendedCrop,
+      climate: 'Subtropical / Warm Temperate',
       conditions: 'Long, hot summers and mild winters.',
-      soil: 'Sandy loam, well-drained.',
-      reasoning: 'Cotton and soybeans perform excellently in subtropical zones. The moderate rainfall and long growing season here are ideal for cotton.'
+      soil: 'Often sandy loam, well-drained soils.',
+      reasoning: `${recommendedCrop.name} performs excellently in subtropical zones. The moderate rainfall and long growing season here are ideal for it.`
     };
   } else if (absLat >= 40 && absLat < 55) {
     // Cool Temperate
+    const temperateCrops = [CROP_TYPES.WHEAT, CROP_TYPES.CORN, CROP_TYPES.SUNFLOWER, CROP_TYPES.POTATO, CROP_TYPES.SUGARBEET, CROP_TYPES.APPLE, CROP_TYPES.CANOLA, CROP_TYPES.ONION, CROP_TYPES.BEANS];
+    const recommendedCrop = temperateCrops[Math.floor(Math.random() * temperateCrops.length)];
     return {
-      recommendedCrop: CROP_TYPES.WHEAT,
+      recommendedCrop,
       climate: 'Temperate',
       conditions: 'Distinct seasons, moderate rainfall, cool winters.',
-      soil: 'Deep, fertile loam.',
-      reasoning: 'Wheat and corn are staples of temperate agriculture. The chill hours in winter and warm summers make this a perfect wheat belt.'
+      soil: 'Deep, fertile loam (Mollisols or Alfisols).',
+      reasoning: `${recommendedCrop.name} is a staple of temperate agriculture. The chill hours in winter and warm summers make this a perfect growing belt.`
     };
   } else {
     // Cold / Boreal
+    const borealCrops = [CROP_TYPES.BARLEY, CROP_TYPES.OATS, CROP_TYPES.RYE, CROP_TYPES.PEAS, CROP_TYPES.LENTIL];
+    const recommendedCrop = borealCrops[Math.floor(Math.random() * borealCrops.length)];
     return {
-      recommendedCrop: { name: 'Barley / Oats', color: '#d97706' },
+      recommendedCrop,
       climate: 'Cold Temperate / Boreal',
       conditions: 'Short growing season, cold winters.',
-      soil: 'Slightly acidic, well-drained.',
-      reasoning: 'Hardy crops like barley or oats are recommended due to the short frost-free period and cooler summer temperatures.'
+      soil: 'Slightly acidic, well-drained, often podzolic.',
+      reasoning: `Hardy crops like ${recommendedCrop.name} are recommended due to the short frost-free period and cooler summer temperatures.`
     };
   }
 }
