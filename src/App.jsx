@@ -4,11 +4,14 @@ import MapContainer from './components/MapContainer';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
 import './App.css';
 
+import { mockFields } from './data/mockData';
+
 function App() {
   const [activeLayer, setActiveLayer] = useState('crop'); // 'crop', 'stress', 'advisory'
   const [selectedField, setSelectedField] = useState(null);
   const [selectedRegion, setSelectedRegion] = useState(null);
 
+  const [fields, setFields] = useState(mockFields);
   const [drawnFields, setDrawnFields] = useState(null);
   const [drawnBounds, setDrawnBounds] = useState(null);
   const [isHeatmapMode, setIsHeatmapMode] = useState(false);
@@ -25,13 +28,14 @@ function App() {
         }}
         selectedRegion={selectedRegion}
         setSelectedRegion={setSelectedRegion}
-
         isHeatmapMode={isHeatmapMode}
         setIsHeatmapMode={setIsHeatmapMode}
       />
       
       <MapContainer 
         activeLayer={activeLayer} 
+        fields={fields}
+        setFields={setFields}
         selectedField={selectedField}
         setSelectedField={setSelectedField}
         selectedRegion={selectedRegion}

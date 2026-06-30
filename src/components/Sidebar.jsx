@@ -79,7 +79,7 @@ const Sidebar = ({ activeLayer, setActiveLayer, selectedRegion, setSelectedRegio
         <p className="text-xs text-secondary mb-2">
           <strong>Data Sourced from:</strong> Programme of the European Union - Copernicus: Europe's eyes on Earth - ESA (Simulated)
         </p>
-        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+        <p className="text-xs" style={{ color: 'rgba(0,0,0,0.4)' }}>
           Data simulated for 30-hour hackathon demonstration.
         </p>
       </div>

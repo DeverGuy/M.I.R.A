@@ -1,12 +1,31 @@
 import React from 'react';
-import { X, TrendingUp, Droplet, Sprout, MapPin } from 'lucide-react';
+import { X, TrendingUp, Droplets, Sprout, MapPin, AlertTriangle } from 'lucide-react';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area 
 } from 'recharts';
 
 import { suggestCropForRegion } from '../data/mockData';
+import { fetchWeatherData } from '../apiService';
 
 const AnalyticsDashboard = ({ field, region, drawnFields, drawnBounds, onClose }) => {
+  const [realTimeSeries, setRealTimeSeries] = React.useState(null);
+  const [isLoadingWeather, setIsLoadingWeather] = React.useState(false);
+
+  React.useEffect(() => {
+    if (field && field.id.startsWith('osm-')) {
+      setIsLoadingWeather(true);
+      fetchWeatherData(field.center[0], field.center[1]).then(data => {
+        setRealTimeSeries(data);
+        setIsLoadingWeather(false);
+      });
+    } else if (field) {
+      setRealTimeSeries(field.timeSeries);
+      setIsLoadingWeather(false);
+    } else {
+      setRealTimeSeries(null);
+    }
+  }, [field]);
+
   if (!field && !region && drawnFields === null) return null;
 
   let suggestion = null;
@@ -18,7 +37,7 @@ const AnalyticsDashboard = ({ field, region, drawnFields, drawnBounds, onClose }
   const renderSuggestion = () => {
     if (!suggestion) return null;
     return (
-      <div className="mt-4 p-4 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
+      <div className="mt-4 p-4 rounded-lg" style={{ background: 'rgba(0,0,0,0.04)' }}>
         <h4 className="font-semibold mb-2 flex items-center gap-2"><Sprout size={16} /> Crop Suggestion</h4>
         <div className="mb-2">
           <span className="text-sm text-secondary">Recommended Crop: </span>
@@ -45,7 +64,7 @@ const AnalyticsDashboard = ({ field, region, drawnFields, drawnBounds, onClose }
               <X size={24} />
             </button>
           </div>
-          <div className="mt-4 p-4 rounded-lg text-center" style={{ background: 'rgba(255,255,255,0.05)' }}>
+          <div className="mt-4 p-4 rounded-lg text-center" style={{ background: 'rgba(0,0,0,0.04)' }}>
             <p className="text-secondary">No agricultural fields were found in the selected area.</p>
             <p className="text-sm text-secondary mt-2">Try drawing a box over the colored field markers on the map.</p>
           </div>
@@ -104,7 +123,7 @@ const AnalyticsDashboard = ({ field, region, drawnFields, drawnBounds, onClose }
           </div>
         </div>
         
-        <div className="mt-4 p-4 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
+        <div className="mt-4 p-4 rounded-lg" style={{ background: 'rgba(0,0,0,0.04)' }}>
           <h4 className="font-semibold mb-2">Area Stress Overview</h4>
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm">Overall Status:</span>
@@ -132,7 +151,7 @@ const AnalyticsDashboard = ({ field, region, drawnFields, drawnBounds, onClose }
             <X size={24} />
           </button>
         </div>
-        <div className="mt-4 p-4 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
+        <div className="mt-4 p-4 rounded-lg" style={{ background: 'rgba(0,0,0,0.04)' }}>
           <h4 className="font-semibold mb-2 flex items-center gap-2"><MapPin size={16} /> Region Selected</h4>
           <p className="text-sm text-secondary mb-2">
             You are currently viewing the general agricultural area for {region.name}.
@@ -178,43 +197,54 @@ const AnalyticsDashboard = ({ field, region, drawnFields, drawnBounds, onClose }
           <TrendingUp size={16} />
           Vegetation Indices (NDVI / NDWI)
         </h3>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={field.timeSeries} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+        {isLoadingWeather ? (
+          <div className="flex items-center justify-center h-full text-secondary">
+            Fetching real-time climate data...
+          </div>
+        ) : realTimeSeries ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={realTimeSeries} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.03)" />
             <XAxis dataKey="week" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
             <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
             <Tooltip 
-              contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
-              itemStyle={{ color: '#f8fafc' }}
+              contentStyle={{ backgroundColor: '#ffffff', border: 'none', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', color: '#1e293b' }}
+              itemStyle={{ color: '#1e293b' }}
             />
             <Legend wrapperStyle={{ fontSize: '12px' }} />
             <Line type="monotone" dataKey="ndvi" name="NDVI" stroke="#10b981" strokeWidth={2} dot={false} />
             <Line type="monotone" dataKey="ndwi" name="NDWI" stroke="#3b82f6" strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
+        ) : null}
       </div>
 
-      <div className="chart-container">
-        <h3 className="chart-title">
-          <Droplet size={16} />
-          Crop Water Deficit & Rainfall
+      <div className="chart-container mt-8">
+        <h3 className="chart-title text-sm">
+          <Droplets size={16} /> Moisture Deficit vs Rainfall (Past 12 Weeks)
         </h3>
+        {isLoadingWeather ? (
+          <div className="flex items-center justify-center h-full text-secondary">
+            Loading data...
+          </div>
+        ) : realTimeSeries ? (
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={field.timeSeries} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+          <AreaChart data={realTimeSeries} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.03)" />
             <XAxis dataKey="week" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
             <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
             <Tooltip 
-              contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+              contentStyle={{ backgroundColor: '#ffffff', border: 'none', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', color: '#1e293b' }}
             />
             <Legend wrapperStyle={{ fontSize: '12px' }} />
             <Area type="monotone" dataKey="deficit" name="Water Deficit (mm)" stackId="1" stroke="#ef4444" fill="#ef4444" fillOpacity={0.3} />
             <Area type="monotone" dataKey="rainfall" name="Rainfall (mm)" stackId="2" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
           </AreaChart>
         </ResponsiveContainer>
+        ) : null}
       </div>
 
-      <div className="mt-4 p-4 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
+      <div className="mt-4 p-4 rounded-lg" style={{ background: 'rgba(0,0,0,0.04)' }}>
         <h4 className="font-semibold mb-2">AI Advisory</h4>
         <p className="text-sm text-secondary">
           Based on the current water deficit and phenological stage, the system recommends: <strong style={{ color: field.advisory.color }}>{field.advisory.name}</strong>.

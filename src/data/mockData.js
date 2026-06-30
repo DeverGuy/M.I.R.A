@@ -71,28 +71,36 @@ export const AGRICULTURAL_HUBS = [
   // North America
   { name: 'USA Midwest', lat: 41.5, lng: -93.5, spread: 3.0 },
   { name: 'USA Central Valley', lat: 36.5, lng: -120.0, spread: 1.0 },
+  { name: 'USA Mississippi Delta', lat: 33.5, lng: -90.5, spread: 1.5 },
   { name: 'Canada Prairies', lat: 51.0, lng: -106.0, spread: 3.0 },
+  { name: 'Mexico Central', lat: 20.5, lng: -100.5, spread: 2.0 },
   
   // South America
   { name: 'Brazil Mato Grosso', lat: -12.5, lng: -55.5, spread: 4.0 },
   { name: 'Brazil Parana', lat: -24.5, lng: -51.5, spread: 2.0 },
   { name: 'Argentina Pampas', lat: -33.5, lng: -62.5, spread: 3.0 },
+  { name: 'Colombia Cauca Valley', lat: 3.5, lng: -76.5, spread: 1.0 },
   
   // Europe
   { name: 'France', lat: 47.0, lng: 2.0, spread: 2.0 },
   { name: 'Germany', lat: 51.0, lng: 10.0, spread: 2.0 },
   { name: 'Ukraine', lat: 49.0, lng: 31.0, spread: 3.0 },
+  { name: 'Spain Andalusia', lat: 37.5, lng: -4.5, spread: 1.5 },
+  { name: 'Italy Po Valley', lat: 45.0, lng: 10.0, spread: 1.5 },
   
   // Africa
   { name: 'South Africa Free State', lat: -28.0, lng: 26.0, spread: 2.0 },
   { name: 'Nigeria Kano', lat: 11.5, lng: 8.5, spread: 2.0 },
   { name: 'Kenya Rift Valley', lat: 0.5, lng: 35.5, spread: 1.5 },
+  { name: 'Egypt Nile Delta', lat: 30.5, lng: 31.0, spread: 1.0 },
   
   // Asia
   { name: 'India Punjab', lat: 30.5, lng: 75.5, spread: 1.5 },
   { name: 'India Madhya Pradesh', lat: 23.5, lng: 78.5, spread: 3.0 },
   { name: 'China Henan', lat: 34.0, lng: 114.0, spread: 2.0 },
   { name: 'China Heilongjiang', lat: 47.0, lng: 127.0, spread: 3.0 },
+  { name: 'Vietnam Mekong Delta', lat: 10.0, lng: 105.5, spread: 1.0 },
+  { name: 'Indonesia Java', lat: -7.5, lng: 110.0, spread: 2.0 },
   
   // Australia
   { name: 'Australia NSW', lat: -33.0, lng: 147.0, spread: 2.0 },

@@ -3,7 +3,8 @@ import { MapContainer as LeafletMap, TileLayer, Polygon, Popup, useMap, Rectangl
 import L from 'leaflet';
 import './leaflet-setup';
 import 'leaflet/dist/leaflet.css';
-import { mockFields, CROP_TYPES, STRESS_LEVELS, ADVISORY_STATUS } from '../data/mockData';
+import { CROP_TYPES, STRESS_LEVELS, ADVISORY_STATUS } from '../data/mockData';
+import { fetchRealFields } from '../apiService';
 import SimplexLayer from './SimplexLayer';
 
 // Component to handle map interactions like zooming to fields
@@ -25,7 +26,7 @@ const MapController = ({ selectedField, selectedRegion }) => {
 };
 
 // Component to handle freeform drag-to-select area drawing
-const DrawBoxControl = ({ drawnBounds, setDrawnFields, setDrawnBounds }) => {
+const DrawBoxControl = ({ drawnBounds, setDrawnFields, setDrawnBounds, setFields }) => {
   const map = useMap();
   const [bounds, setBounds] = React.useState(null);
   
@@ -93,12 +94,19 @@ const DrawBoxControl = ({ drawnBounds, setDrawnFields, setDrawnBounds }) => {
         map.getContainer().style.cursor = '';
       }
       
-      // Calculate intersections with mockFields
-      const intersectedFields = mockFields.filter(field => {
-        const pt = L.latLng(field.polygon[0][0], field.polygon[0][1]);
-        return finalBounds.contains(pt);
+      // Fetch real farmland polygons from OpenStreetMap Overpass API
+      fetchRealFields(finalBounds).then(realFields => {
+        if (realFields.length > 0) {
+          setFields(prev => {
+            // Keep existing fields that aren't OSM, add new OSM fields
+            const nonOsmFields = prev.filter(f => !f.id.startsWith('osm-'));
+            return [...nonOsmFields, ...realFields];
+          });
+          setDrawnFields(realFields);
+        } else {
+          setDrawnFields([]);
+        }
       });
-      setDrawnFields(intersectedFields);
     };
     
     map.on('mousedown', onMouseDown);
@@ -122,7 +130,7 @@ const DrawBoxControl = ({ drawnBounds, setDrawnFields, setDrawnBounds }) => {
   return null;
 };
 
-const MapContainer = ({ activeLayer, selectedField, setSelectedField, selectedRegion, drawnBounds, setDrawnFields, setDrawnBounds, isHeatmapMode }) => {
+const MapContainer = ({ activeLayer, fields, setFields, selectedField, setSelectedField, selectedRegion, drawnBounds, setDrawnFields, setDrawnBounds, isHeatmapMode }) => {
   // Center to show a global view
   const center = [20, 0];
 
@@ -170,13 +178,13 @@ const MapContainer = ({ activeLayer, selectedField, setSelectedField, selectedRe
   return (
     <div className="map-area">
       <LeafletMap center={center} zoom={3} style={{ height: '100%', width: '100%' }}>
-        {/* Dark theme styled tile layer (using CartoDB Dark Matter) */}
+        {/* Light theme styled tile layer (using CartoDB Positron) */}
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
         
-        {!isHeatmapMode && mockFields.map((field) => (
+        {!isHeatmapMode && fields.map((field) => (
           <Polygon
             key={field.id}
             positions={field.polygon}
@@ -209,7 +217,7 @@ const MapContainer = ({ activeLayer, selectedField, setSelectedField, selectedRe
         ))}
 
         <MapController selectedField={selectedField} selectedRegion={selectedRegion} />
-        <DrawBoxControl drawnBounds={drawnBounds} setDrawnFields={setDrawnFields} setDrawnBounds={setDrawnBounds} />
+        <DrawBoxControl drawnBounds={drawnBounds} setDrawnFields={setDrawnFields} setDrawnBounds={setDrawnBounds} setFields={setFields} />
         <SimplexLayer activeLayer={activeLayer} isHeatmapMode={isHeatmapMode} />
       </LeafletMap>
       
