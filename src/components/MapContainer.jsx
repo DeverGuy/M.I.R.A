@@ -25,7 +25,7 @@ const MapController = ({ selectedField, selectedRegion }) => {
 };
 
 // Component to handle freeform drag-to-select area drawing
-const DrawBoxControl = ({ isDrawingMode, setDrawnFields }) => {
+const DrawBoxControl = ({ isDrawingMode, setDrawnFields, setDrawnBounds }) => {
   const map = useMap();
   const [bounds, setBounds] = React.useState(null);
   
@@ -33,6 +33,7 @@ const DrawBoxControl = ({ isDrawingMode, setDrawnFields }) => {
     if (!isDrawingMode) {
       setBounds(null);
       setDrawnFields([]);
+      if (setDrawnBounds) setDrawnBounds(null);
       map.dragging.enable();
       if (map.getContainer()) {
         map.getContainer().style.cursor = '';
@@ -62,6 +63,7 @@ const DrawBoxControl = ({ isDrawingMode, setDrawnFields }) => {
       const endPoint = e.latlng;
       const finalBounds = L.latLngBounds(startPoint, endPoint);
       setBounds(finalBounds);
+      if (setDrawnBounds) setDrawnBounds(finalBounds);
       startPoint = null;
       
       // Calculate intersections with mockFields
@@ -94,7 +96,7 @@ const DrawBoxControl = ({ isDrawingMode, setDrawnFields }) => {
   return null;
 };
 
-const MapContainer = ({ activeLayer, selectedField, setSelectedField, selectedRegion, isDrawingMode, setDrawnFields, isHeatmapMode }) => {
+const MapContainer = ({ activeLayer, selectedField, setSelectedField, selectedRegion, isDrawingMode, setDrawnFields, setDrawnBounds, isHeatmapMode }) => {
   // Center to show a global view
   const center = [20, 0];
 
@@ -181,7 +183,7 @@ const MapContainer = ({ activeLayer, selectedField, setSelectedField, selectedRe
         ))}
 
         <MapController selectedField={selectedField} selectedRegion={selectedRegion} />
-        <DrawBoxControl isDrawingMode={isDrawingMode} setDrawnFields={setDrawnFields} />
+        <DrawBoxControl isDrawingMode={isDrawingMode} setDrawnFields={setDrawnFields} setDrawnBounds={setDrawnBounds} />
         <SimplexLayer activeLayer={activeLayer} isHeatmapMode={isHeatmapMode} />
       </LeafletMap>
       

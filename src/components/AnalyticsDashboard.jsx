@@ -4,8 +4,33 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area 
 } from 'recharts';
 
-const AnalyticsDashboard = ({ field, region, drawnFields, onClose }) => {
+import { suggestCropForRegion } from '../data/mockData';
+
+const AnalyticsDashboard = ({ field, region, drawnFields, drawnBounds, onClose }) => {
   if (!field && !region && drawnFields === null) return null;
+
+  let suggestion = null;
+  if (drawnBounds) {
+    const center = drawnBounds.getCenter();
+    suggestion = suggestCropForRegion(center.lat, center.lng);
+  }
+
+  const renderSuggestion = () => {
+    if (!suggestion) return null;
+    return (
+      <div className="mt-4 p-4 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
+        <h4 className="font-semibold mb-2 flex items-center gap-2"><Sprout size={16} /> Crop Suggestion</h4>
+        <div className="mb-2">
+          <span className="text-sm text-secondary">Recommended Crop: </span>
+          <strong style={{ color: suggestion.recommendedCrop.color }}>{suggestion.recommendedCrop.name}</strong>
+        </div>
+        <p className="text-sm text-secondary mb-1"><strong>Climate:</strong> {suggestion.climate}</p>
+        <p className="text-sm text-secondary mb-1"><strong>Conditions:</strong> {suggestion.conditions}</p>
+        <p className="text-sm text-secondary mb-1"><strong>Soil:</strong> {suggestion.soil}</p>
+        <p className="text-sm text-secondary mt-2 text-blue-400">{suggestion.reasoning}</p>
+      </div>
+    );
+  };
 
   if (drawnFields !== null) {
     if (drawnFields.length === 0) {
@@ -24,6 +49,7 @@ const AnalyticsDashboard = ({ field, region, drawnFields, onClose }) => {
             <p className="text-secondary">No agricultural fields were found in the selected area.</p>
             <p className="text-sm text-secondary mt-2">Try drawing a box over the colored field markers on the map.</p>
           </div>
+          {renderSuggestion()}
         </div>
       );
     }
@@ -88,6 +114,8 @@ const AnalyticsDashboard = ({ field, region, drawnFields, onClose }) => {
             Low: {stressCounts.low} | Mod: {stressCounts.mod} | High: {stressCounts.high}
           </div>
         </div>
+        
+        {renderSuggestion()}
       </div>
     );
   }

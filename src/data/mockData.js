@@ -137,3 +137,46 @@ function generateTimeSeries(cropType, stressProfile) {
   }
   return data;
 }
+
+export function suggestCropForRegion(lat, lng) {
+  // Simple mock logic based on latitude
+  const absLat = Math.abs(lat);
+  
+  if (absLat < 23.5) {
+    // Tropical
+    return {
+      recommendedCrop: CROP_TYPES.RICE,
+      climate: 'Tropical',
+      conditions: 'High humidity, consistent rainfall, warm temperatures year-round.',
+      soil: 'Clay loam with good water retention.',
+      reasoning: 'Rice and cotton thrive in tropical climates with abundant water and heat. Given the selected coordinates, rice is highly recommended.'
+    };
+  } else if (absLat >= 23.5 && absLat < 40) {
+    // Subtropical / Warm Temperate
+    return {
+      recommendedCrop: CROP_TYPES.COTTON,
+      climate: 'Subtropical',
+      conditions: 'Long, hot summers and mild winters.',
+      soil: 'Sandy loam, well-drained.',
+      reasoning: 'Cotton and soybeans perform excellently in subtropical zones. The moderate rainfall and long growing season here are ideal for cotton.'
+    };
+  } else if (absLat >= 40 && absLat < 55) {
+    // Cool Temperate
+    return {
+      recommendedCrop: CROP_TYPES.WHEAT,
+      climate: 'Temperate',
+      conditions: 'Distinct seasons, moderate rainfall, cool winters.',
+      soil: 'Deep, fertile loam.',
+      reasoning: 'Wheat and corn are staples of temperate agriculture. The chill hours in winter and warm summers make this a perfect wheat belt.'
+    };
+  } else {
+    // Cold / Boreal
+    return {
+      recommendedCrop: { name: 'Barley / Oats', color: '#d97706' },
+      climate: 'Cold Temperate / Boreal',
+      conditions: 'Short growing season, cold winters.',
+      soil: 'Slightly acidic, well-drained.',
+      reasoning: 'Hardy crops like barley or oats are recommended due to the short frost-free period and cooler summer temperatures.'
+    };
+  }
+}

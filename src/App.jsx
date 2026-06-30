@@ -10,6 +10,7 @@ function App() {
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [drawnFields, setDrawnFields] = useState(null);
+  const [drawnBounds, setDrawnBounds] = useState(null);
   const [isHeatmapMode, setIsHeatmapMode] = useState(false);
 
   return (
@@ -37,6 +38,7 @@ function App() {
         selectedRegion={selectedRegion}
         isDrawingMode={isDrawingMode}
         setDrawnFields={setDrawnFields}
+        setDrawnBounds={setDrawnBounds}
         isHeatmapMode={isHeatmapMode}
       />
       
@@ -44,10 +46,12 @@ function App() {
         field={selectedField} 
         region={selectedRegion}
         drawnFields={drawnFields}
+        drawnBounds={drawnBounds}
         onClose={() => {
           setSelectedField(null);
           setSelectedRegion(null);
           setDrawnFields(null);
+          setDrawnBounds(null);
         }} 
       />
     </div>
