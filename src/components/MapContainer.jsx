@@ -25,50 +25,76 @@ const MapController = ({ selectedField, selectedRegion }) => {
 };
 
 // Component to handle freeform drag-to-select area drawing
-const DrawBoxControl = ({ isDrawingMode, setDrawnFields, setDrawnBounds }) => {
+const DrawBoxControl = ({ drawnBounds, setDrawnFields, setDrawnBounds }) => {
   const map = useMap();
   const [bounds, setBounds] = React.useState(null);
   
   React.useEffect(() => {
-    if (!isDrawingMode) {
+    if (!drawnBounds) {
       setBounds(null);
-      setDrawnFields([]);
-      if (setDrawnBounds) setDrawnBounds(null);
-      map.dragging.enable();
-      if (map.getContainer()) {
-        map.getContainer().style.cursor = '';
-      }
-      return;
     }
-    
-    map.dragging.disable();
-    if (map.getContainer()) {
-      map.getContainer().style.cursor = 'crosshair';
-    }
-    
+  }, [drawnBounds]);
+  
+  React.useEffect(() => {
     let startPoint = null;
+    let panStart = null;
     
     const onMouseDown = (e) => {
-      startPoint = e.latlng;
-      setBounds([startPoint, startPoint]);
+      // Middle click to pan
+      if (e.originalEvent.button === 1) {
+        e.originalEvent.preventDefault();
+        panStart = e.containerPoint;
+        if (map.getContainer()) {
+          map.getContainer().style.cursor = 'grabbing';
+        }
+        return;
+      }
+      // Shift + Left click to draw box
+      if (e.originalEvent.shiftKey && e.originalEvent.button === 0) {
+        map.dragging.disable();
+        if (map.getContainer()) {
+          map.getContainer().style.cursor = 'crosshair';
+        }
+        startPoint = e.latlng;
+        setBounds([startPoint, startPoint]);
+      }
     };
     
     const onMouseMove = (e) => {
+      if (panStart) {
+        const panEnd = e.containerPoint;
+        const offset = [panStart.x - panEnd.x, panStart.y - panEnd.y];
+        map.panBy(offset, { animate: false });
+        panStart = panEnd;
+        return;
+      }
       if (!startPoint) return;
       setBounds([startPoint, e.latlng]);
     };
     
     const onMouseUp = (e) => {
+      if (e.originalEvent.button === 1) {
+        panStart = null;
+        if (map.getContainer()) {
+          map.getContainer().style.cursor = '';
+        }
+        return;
+      }
       if (!startPoint) return;
+      
       const endPoint = e.latlng;
       const finalBounds = L.latLngBounds(startPoint, endPoint);
       setBounds(finalBounds);
       if (setDrawnBounds) setDrawnBounds(finalBounds);
       startPoint = null;
       
+      map.dragging.enable();
+      if (map.getContainer()) {
+        map.getContainer().style.cursor = '';
+      }
+      
       // Calculate intersections with mockFields
       const intersectedFields = mockFields.filter(field => {
-        // Check if the field's center/first point is inside the drawn bounds
         const pt = L.latLng(field.polygon[0][0], field.polygon[0][1]);
         return finalBounds.contains(pt);
       });
@@ -88,7 +114,7 @@ const DrawBoxControl = ({ isDrawingMode, setDrawnFields, setDrawnBounds }) => {
         map.getContainer().style.cursor = '';
       }
     };
-  }, [isDrawingMode, map, setDrawnFields]);
+  }, [map, setDrawnFields, setDrawnBounds]);
   
   if (bounds) {
     return <Rectangle bounds={bounds} pathOptions={{ color: '#3b82f6', weight: 2, fillOpacity: 0.2 }} />;
@@ -96,7 +122,7 @@ const DrawBoxControl = ({ isDrawingMode, setDrawnFields, setDrawnBounds }) => {
   return null;
 };
 
-const MapContainer = ({ activeLayer, selectedField, setSelectedField, selectedRegion, isDrawingMode, setDrawnFields, setDrawnBounds, isHeatmapMode }) => {
+const MapContainer = ({ activeLayer, selectedField, setSelectedField, selectedRegion, drawnBounds, setDrawnFields, setDrawnBounds, isHeatmapMode }) => {
   // Center to show a global view
   const center = [20, 0];
 
@@ -183,7 +209,7 @@ const MapContainer = ({ activeLayer, selectedField, setSelectedField, selectedRe
         ))}
 
         <MapController selectedField={selectedField} selectedRegion={selectedRegion} />
-        <DrawBoxControl isDrawingMode={isDrawingMode} setDrawnFields={setDrawnFields} setDrawnBounds={setDrawnBounds} />
+        <DrawBoxControl drawnBounds={drawnBounds} setDrawnFields={setDrawnFields} setDrawnBounds={setDrawnBounds} />
         <SimplexLayer activeLayer={activeLayer} isHeatmapMode={isHeatmapMode} />
       </LeafletMap>
       

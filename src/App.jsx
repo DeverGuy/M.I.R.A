@@ -8,7 +8,7 @@ function App() {
   const [activeLayer, setActiveLayer] = useState('crop'); // 'crop', 'stress', 'advisory'
   const [selectedField, setSelectedField] = useState(null);
   const [selectedRegion, setSelectedRegion] = useState(null);
-  const [isDrawingMode, setIsDrawingMode] = useState(false);
+
   const [drawnFields, setDrawnFields] = useState(null);
   const [drawnBounds, setDrawnBounds] = useState(null);
   const [isHeatmapMode, setIsHeatmapMode] = useState(false);
@@ -25,8 +25,7 @@ function App() {
         }}
         selectedRegion={selectedRegion}
         setSelectedRegion={setSelectedRegion}
-        isDrawingMode={isDrawingMode}
-        setIsDrawingMode={setIsDrawingMode}
+
         isHeatmapMode={isHeatmapMode}
         setIsHeatmapMode={setIsHeatmapMode}
       />
@@ -36,7 +35,7 @@ function App() {
         selectedField={selectedField}
         setSelectedField={setSelectedField}
         selectedRegion={selectedRegion}
-        isDrawingMode={isDrawingMode}
+        drawnBounds={drawnBounds}
         setDrawnFields={setDrawnFields}
         setDrawnBounds={setDrawnBounds}
         isHeatmapMode={isHeatmapMode}

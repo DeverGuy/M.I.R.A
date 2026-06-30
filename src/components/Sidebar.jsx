@@ -2,7 +2,7 @@ import React from 'react';
 import { Layers, Droplets, Map as MapIcon, Activity, MapPin, MousePointer2, ThermometerSun } from 'lucide-react';
 import { AGRICULTURAL_HUBS } from '../data/mockData';
 
-const Sidebar = ({ activeLayer, setActiveLayer, selectedRegion, setSelectedRegion, isDrawingMode, setIsDrawingMode, isHeatmapMode, setIsHeatmapMode }) => {
+const Sidebar = ({ activeLayer, setActiveLayer, selectedRegion, setSelectedRegion, isHeatmapMode, setIsHeatmapMode }) => {
   const navItems = [
     { id: 'crop', label: 'Crop Type Map', icon: MapIcon },
     { id: 'stress', label: 'Moisture Stress', icon: Activity },
@@ -66,19 +66,11 @@ const Sidebar = ({ activeLayer, setActiveLayer, selectedRegion, setSelectedRegio
           ))}
         </select>
         
-        <div className="mt-4">
-          <button 
-            onClick={() => setIsDrawingMode(!isDrawingMode)}
-            className={`w-full p-2 flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors ${isDrawingMode ? 'bg-blue-600 text-white' : 'bg-slate-800 text-secondary border border-slate-700 hover:text-white'}`}
-            style={{ 
-              backgroundColor: isDrawingMode ? 'var(--accent-primary)' : 'rgba(30,41,59,0.5)',
-              borderColor: isDrawingMode ? 'var(--accent-primary)' : 'var(--border-color)',
-              color: isDrawingMode ? '#fff' : 'var(--text-secondary)'
-            }}
-          >
-            <MousePointer2 size={16} />
-            {isDrawingMode ? 'Cancel Drawing' : 'Draw Custom Region'}
-          </button>
+        <div className="mt-4 p-3 bg-slate-800 rounded-lg" style={{ border: '1px solid var(--border-color)' }}>
+          <p className="text-xs text-secondary flex items-center gap-2">
+            <MousePointer2 size={14} />
+            <strong>Tip:</strong> Hold <em>Shift</em> and drag on the map to draw a custom region box.
+          </p>
         </div>
       </div>
 
