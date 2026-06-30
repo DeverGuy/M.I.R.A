@@ -16,22 +16,24 @@ const Sidebar = ({ activeLayer, setActiveLayer, selectedRegion, setSelectedRegio
         <span className="logo-text">AgriSense AI</span>
       </div>
 
-      <div className="mb-6">
-        <div className="flex items-center justify-between p-1 bg-slate-800 rounded-lg mb-4" style={{ border: '1px solid var(--border-color)' }}>
-          <button 
-            onClick={() => setIsHeatmapMode(false)}
-            className={`flex-1 py-1.5 px-3 text-sm font-semibold rounded-md transition-colors ${!isHeatmapMode ? 'bg-blue-600 text-white' : 'text-secondary hover:text-white'}`}
-          >
-            Fields
-          </button>
-          <button 
-            onClick={() => setIsHeatmapMode(true)}
-            className={`flex-1 py-1.5 px-3 text-sm font-semibold rounded-md transition-colors flex items-center justify-center gap-1 ${isHeatmapMode ? 'bg-blue-600 text-white' : 'text-secondary hover:text-white'}`}
-          >
-            <ThermometerSun size={14} /> Heatmap
-          </button>
+      {activeLayer === 'stress' && (
+        <div className="mb-6">
+          <div className="flex items-center justify-between p-1 bg-slate-800 rounded-lg mb-4" style={{ border: '1px solid var(--border-color)' }}>
+            <button 
+              onClick={() => setIsHeatmapMode(false)}
+              className={`flex-1 py-1.5 px-3 text-sm font-semibold rounded-md transition-colors ${!isHeatmapMode ? 'bg-blue-600 text-white' : 'text-secondary hover:text-white'}`}
+            >
+              Farm Fields
+            </button>
+            <button 
+              onClick={() => setIsHeatmapMode(true)}
+              className={`flex-1 py-1.5 px-3 text-sm font-semibold rounded-md transition-colors flex items-center justify-center gap-1 ${isHeatmapMode ? 'bg-blue-600 text-white' : 'text-secondary hover:text-white'}`}
+            >
+              <ThermometerSun size={14} /> Global Model
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="nav-menu">
         {navItems.map((item) => (

@@ -18,7 +18,8 @@
     "react-dom": "^19.2.7",
     "react-leaflet": "^5.0.0",
     "react-leaflet-draw": "^0.21.0",
-    "recharts": "^3.9.0"
+    "recharts": "^3.9.0",
+    "simplex-noise": "^4.0.3"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",

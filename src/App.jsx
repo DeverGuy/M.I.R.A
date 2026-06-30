@@ -16,7 +16,12 @@ function App() {
     <div className="app-container">
       <Sidebar 
         activeLayer={activeLayer} 
-        setActiveLayer={setActiveLayer}
+        setActiveLayer={(layer) => {
+          setActiveLayer(layer);
+          if (layer !== 'stress') {
+            setIsHeatmapMode(false);
+          }
+        }}
         selectedRegion={selectedRegion}
         setSelectedRegion={setSelectedRegion}
         isDrawingMode={isDrawingMode}

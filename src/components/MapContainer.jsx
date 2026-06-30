@@ -4,6 +4,7 @@ import L from 'leaflet';
 import './leaflet-setup';
 import 'leaflet/dist/leaflet.css';
 import { mockFields, CROP_TYPES, STRESS_LEVELS, ADVISORY_STATUS } from '../data/mockData';
+import SimplexLayer from './SimplexLayer';
 
 // Component to handle map interactions like zooming to fields
 const MapController = ({ selectedField, selectedRegion }) => {
@@ -19,75 +20,6 @@ const MapController = ({ selectedField, selectedRegion }) => {
       map.flyTo([20, 0], 3, { duration: 1.5 });
     }
   }, [selectedField, selectedRegion, map]);
-
-  return null;
-};
-
-// Component to handle continuous heatmap rendering
-const HeatmapOverlay = ({ activeLayer, isHeatmapMode }) => {
-  const map = useMap();
-  const heatLayerRef = React.useRef(null);
-
-  React.useEffect(() => {
-    if (!isHeatmapMode) {
-      if (heatLayerRef.current) {
-        map.removeLayer(heatLayerRef.current);
-        heatLayerRef.current = null;
-      }
-      return;
-    }
-
-    // Convert discrete fields to points with intensity values
-    const points = mockFields.map(field => {
-      const lat = field.polygon[0][0];
-      const lng = field.polygon[0][1];
-      let intensity = 0.5;
-      
-      if (activeLayer === 'stress') {
-        intensity = field.stress.id === 'high' ? 1.0 : (field.stress.id === 'mod' ? 0.6 : 0.2);
-      } else if (activeLayer === 'advisory') {
-        intensity = field.advisory.id === 'irrigate' ? 1.0 : 0.2;
-      }
-      
-      return [lat, lng, intensity];
-    });
-
-    let gradient = {};
-    if (activeLayer === 'stress') {
-      gradient = { 0.2: 'green', 0.6: 'yellow', 1.0: 'red' };
-    } else if (activeLayer === 'advisory') {
-      gradient = { 0.2: 'blue', 1.0: 'orange' };
-    } else {
-      // Default density gradient for crop types
-      gradient = { 0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1.0: 'red' };
-    }
-
-    import('leaflet.heat').then(() => {
-      if (!heatLayerRef.current) {
-        // Create heat layer with large radius to blend points into a continuous surface
-        heatLayerRef.current = L.heatLayer(points, {
-          radius: 35,
-          blur: 25,
-          maxZoom: 6,
-          gradient: gradient
-        }).addTo(map);
-      } else {
-        heatLayerRef.current.setLatLngs(points);
-        heatLayerRef.current.setOptions({ gradient });
-      }
-    });
-
-  }, [isHeatmapMode, activeLayer, map]);
-
-  // Cleanup on unmount
-  React.useEffect(() => {
-    return () => {
-      if (heatLayerRef.current) {
-        map.removeLayer(heatLayerRef.current);
-        heatLayerRef.current = null;
-      }
-    };
-  }, [map]);
 
   return null;
 };
@@ -250,7 +182,7 @@ const MapContainer = ({ activeLayer, selectedField, setSelectedField, selectedRe
 
         <MapController selectedField={selectedField} selectedRegion={selectedRegion} />
         <DrawBoxControl isDrawingMode={isDrawingMode} setDrawnFields={setDrawnFields} />
-        <HeatmapOverlay activeLayer={activeLayer} isHeatmapMode={isHeatmapMode} />
+        <SimplexLayer activeLayer={activeLayer} isHeatmapMode={isHeatmapMode} />
       </LeafletMap>
       
       {renderLegend()}
